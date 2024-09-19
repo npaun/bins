@@ -24,14 +24,7 @@ jobs:
       - name: Generate build files
         run: |
           cd llvm
-          cmake \
-            -B build \
-            llvm \
-            -GNinja \
-            -DLLVM_ENABLE_PROJECTS="$LLVM_PROJECTS" \ 
-            -DCMAKE_BUILD_TYPE=Release \
-            -DBUILD_SHARED_LIBS=OFF \
-            -DLLDB_INCLUDE_TESTS=OFF 
+          cmake -B build llvm -GNinja -DLLVM_ENABLE_PROJECTS="$LLVM_PROJECTS" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DLLDB_INCLUDE_TESTS=OFF 
       - name: Build targets
         run: |
           cd llvm/build
