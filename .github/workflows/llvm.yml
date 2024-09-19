@@ -1,0 +1,40 @@
+name: Build LLVM
+
+on:
+  workflow_dispatch: 
+
+env:
+  LLVM_VERSION: 18.1.8
+  LLVM_PROJECTS: 'clang;lldb'
+  LLVM_TARGETS: 'clang-format lldb lldb-server'
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Get basic dependencies
+        run: |
+          brew install cmake ninja
+      - name: Get llvm
+        run: |
+          curl -L https://github.com/llvm/llvm-project/releases/download/llvmorg-$LLVM_VERSION/llvm-project-$LLVM_VERSION.src.tar.xz -O llvm.tar.xz
+          mkdir llvm
+          tar -C llvm --strip-components=1 -xJf llvm.tar.xz
+      - name: Generate build files
+        run: |
+          cd llvm
+          cmake \
+            -B build \
+            llvm \
+            -GNinja \
+            -DLLVM_ENABLE_PROJECTS="$LLVM_PROJECTS" \ 
+            -DCMAKE_BUILD_TYPE=Release \
+            -DBUILD_SHARED_LIBS=OFF \
+            -DLLDB_INCLUDE_TESTS=OFF 
+      - name: Build targets
+        run: |
+          cd llvm/build
+          ninja $LLVM_TARGETS
+
+      
