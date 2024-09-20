@@ -1,14 +1,30 @@
 name: Build LLVM
 
 on:
-  workflow_dispatch: 
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'LLVM version to build'
+        default: '18.1.8'
+
+permissions:
+  contents: write
 
 env:
-  LLVM_VERSION: 18.1.8
+  LLVM_VERSION: ${{ inputs.version }} 
   LLVM_PROJECTS: 'clang;lldb'
   LLVM_TARGETS: 'clang-format lldb lldb-server'
+  LLVM_BINS: 'clang-format lldb lldb-server'
 
 jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Github release
+        run: |
+          gh release create llvm-$LLVM_VERSION
+        env:
+          GITHUB_TOKEN: ${{ github.TOKEN }}
   build:
     strategy:
       matrix:
@@ -47,5 +63,17 @@ jobs:
         run: |
           cd llvm/build
           ninja $LLVM_TARGETS
+      - name: Upload products
+        shell: bash
+        run: |
+          cd llvm/build/bin
+          for BIN in $LLVM_BINS; do
+            FILENAME=llvm-$LLVM_VERSION-${{matrix.platform-os}}-$BIN
+
+            mv $BIN $FILENAME 
+            gh release upload llvm-$LLVM_VERSION $FILENAME
+          done
+        env:
+          GITHUB_TOKEN: ${{ github.TOKEN }}
 
       
