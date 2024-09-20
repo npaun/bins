@@ -15,6 +15,7 @@ env:
   LLVM_PROJECTS: 'clang;lldb'
   LLVM_TARGETS: 'clang-format lldb lldb-server'
   LLVM_BINS: 'clang-format lldb lldb-server'
+  LLVM_LIBS: 'liblldb'
 
 jobs:
   create-release:
@@ -32,11 +33,20 @@ jobs:
         platform:
           - os: macos-arm64
             runner: macos-latest
+            BIN_EXT: ''
+            SO_EXT: 'dylib'
+            STATIC_LIB_EXT: 'a'
           - os: linux-amd64
             runner: ubuntu-latest
+            BIN_EXT: ''
+            SO_EXT: 'so'
+            STATIC_LIB_EXT: 'a'
           - os: windows-amd64
             runner: windows-latest
             TAR_ARGS:  '--exclude=*/clang/test/Driver/Inputs/* --exclude=*/libcxx/test/std/input.output/filesystems/Inputs/static_test_env/* --exclude=*/libclc/amdgcn-mesa3d'
+            BIN_EXT: ''
+            SO_EXT: 'dll'
+            STATIC_LIB_EXT: 'lib'
     runs-on: ${{ matrix.platform.runner }}
     name: ${{ matrix.platform.os }} (LLVM ${{ env.LLVM_VERSION }})
     steps:
@@ -73,9 +83,16 @@ jobs:
         run: |
           cd llvm/build/bin
           for BIN in $LLVM_BINS; do
-            FILENAME=llvm-$LLVM_VERSION-${{matrix.platform-os}}-$BIN
+            FILENAME=llvm-$LLVM_VERSION-${{ matrix.platform.os }}-$BIN
 
             mv $BIN $FILENAME 
+            gh release upload -R npaun/bins llvm-$LLVM_VERSION $FILENAME
+          done
+
+          cd ../lib
+          for LIB in $LLVM_LIBS; do
+            FILENAME=llvm-$LLVM_VERSION-$OS-$LIB.$LLVM_VERSION.${{ matrix.platform.SO_EXT }}
+            mv $LIB.$LLVM_VERSION.${{ matrix.platform.SO_EXT }} $FILENAME
             gh release upload -R npaun/bins llvm-$LLVM_VERSION $FILENAME
           done
         env:
