@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: Create Github release
         run: |
-          gh release create llvm-$LLVM_VERSION
+          gh release create -R npaun/bins llvm-$LLVM_VERSION
         env:
           GITHUB_TOKEN: ${{ github.TOKEN }}
   build:
@@ -74,7 +74,7 @@ jobs:
             FILENAME=llvm-$LLVM_VERSION-${{matrix.platform-os}}-$BIN
 
             mv $BIN $FILENAME 
-            gh release upload llvm-$LLVM_VERSION $FILENAME
+            gh release upload -R npaun/bins llvm-$LLVM_VERSION $FILENAME
           done
         env:
           GITHUB_TOKEN: ${{ github.TOKEN }}
