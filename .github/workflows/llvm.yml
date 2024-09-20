@@ -29,11 +29,14 @@ jobs:
     strategy:
       matrix:
         platform:
-          - os: macos
-          - os: linux
-          - os: windows
+          - os: macos-arm64
+            runner: macos-latest
+          - os: linux-amd64
+            runner: ubuntu-latest
+          - os: windows-amd64
+            runner: windows-latest
             TAR_ARGS:  '--exclude=*/clang/test/Driver/Inputs/* --exclude=*/libcxx/test/std/input.output/filesystems/Inputs/static_test_env/* --exclude=*/libclc/amdgcn-mesa3d'
-    runs-on: ${{ matrix.platform.os }}-latest
+    runs-on: ${{ matrix.platform.runner }}
     steps:
       - name: Setup for macOS
         if: runner.os == 'macOS'
