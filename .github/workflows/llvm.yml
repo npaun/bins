@@ -26,6 +26,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.TOKEN }}
   build:
+    needs: create-release
     strategy:
       matrix:
         platform:
@@ -37,6 +38,7 @@ jobs:
             runner: windows-latest
             TAR_ARGS:  '--exclude=*/clang/test/Driver/Inputs/* --exclude=*/libcxx/test/std/input.output/filesystems/Inputs/static_test_env/* --exclude=*/libclc/amdgcn-mesa3d'
     runs-on: ${{ matrix.platform.runner }}
+    name: ${{ matrix.platform.os }} (LLVM ${{ env.LLVM_VERSION }})
     steps:
       - name: Setup for macOS
         if: runner.os == 'macOS'
