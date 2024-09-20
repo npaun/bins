@@ -48,7 +48,7 @@ jobs:
             SO_EXT: 'dll'
             STATIC_LIB_EXT: 'lib'
     runs-on: ${{ matrix.platform.runner }}
-    name: ${{ matrix.platform.os }} (LLVM ${{ env.LLVM_VERSION }})
+    name: ${{ matrix.platform.os }}
     steps:
       - name: Setup for macOS
         if: runner.os == 'macOS'
