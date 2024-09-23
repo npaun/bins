@@ -52,7 +52,7 @@ jobs:
         shell: bash
         run: |
           cd llvm
-          cmake -B build llvm -GNinja -DCMAKE_SYSTEM_NAME=cross-compile -DLLVM_HOST_TRIPLE=aarch64-unknown-linux-gnu -DLLVM_TARGETS_TO_BUILD=ARM -DLLVM_ENABLE_PROJECTS="$LLVM_PROJECTS" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DLLDB_INCLUDE_TESTS=OFF 
+          cmake -B build llvm -GNinja -DCMAKE_SYSTEM_NAME=Linux -DLLVM_HOST_TRIPLE=aarch64-unknown-linux-gnu -DLLVM_TARGETS_TO_BUILD=ARM -DLLVM_ENABLE_PROJECTS="$LLVM_PROJECTS" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DLLDB_INCLUDE_TESTS=OFF 
       - name: Build targets
         shell: bash
         run: |
