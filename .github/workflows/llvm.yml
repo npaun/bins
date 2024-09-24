@@ -31,21 +31,27 @@ jobs:
     strategy:
       matrix:
         platform:
-          - os: macos-arm64
+          - os: darwin-arm64
             runner: macos-latest
             BIN_EXT: ''
-            SO_EXT: 'dylib'
+            SO_SUFFIX: '${{ env.LLVM_VERSION }}.dylib'
             STATIC_LIB_EXT: 'a'
           - os: linux-amd64
             runner: ubuntu-latest
             BIN_EXT: ''
-            SO_EXT: 'so'
+            SO_SUFFIX: 'so.${{ env.LLVM_VERSION }}'
+            STATIC_LIB_EXT: 'a'
+          - os: linux-arm64
+            runner: ubuntu-latest
+            CMAKE_ARGS: '-DCMAKE_SYSTEM_NAME=Linux -DLLVM_HOST_TRIPLE=aarch64-unknown-linux-gnu -DLLVM_TARGETS_TO_BUILD=ARM'
+            BIN_EXT: ''
+            SO_SUFFIX: 'so.${{ env.LLVM_VERSION }}'
             STATIC_LIB_EXT: 'a'
           - os: windows-amd64
             runner: windows-latest
             TAR_ARGS:  '--exclude=*/clang/test/Driver/Inputs/* --exclude=*/libcxx/test/std/input.output/filesystems/Inputs/static_test_env/* --exclude=*/libclc/amdgcn-mesa3d'
             BIN_EXT: ''
-            SO_EXT: 'dll'
+            SO_SUFFIX: '${{ env.LLVM_VERSION }}.dll'
             STATIC_LIB_EXT: 'lib'
     runs-on: ${{ matrix.platform.runner }}
     name: ${{ matrix.platform.os }}
@@ -72,7 +78,7 @@ jobs:
         shell: bash
         run: |
           cd llvm
-          cmake -B build llvm -GNinja -DLLVM_ENABLE_PROJECTS="$LLVM_PROJECTS" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DLLDB_INCLUDE_TESTS=OFF 
+          cmake -B build llvm -GNinja -DLLVM_ENABLE_PROJECTS="$LLVM_PROJECTS" -DLLDB_ENABLE_PYTHON=0  -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DLLDB_INCLUDE_TESTS=OFF ${{ matrix.platform.CMAKE_ARGS }}
       - name: Build targets
         shell: bash
         run: |
@@ -91,8 +97,8 @@ jobs:
 
           cd ../lib
           for LIB in $LLVM_LIBS; do
-            FILENAME=llvm-$LLVM_VERSION-${{ matrix.platform.os }}-$LIB.$LLVM_VERSION.${{ matrix.platform.SO_EXT }}
-            mv $LIB.$LLVM_VERSION.${{ matrix.platform.SO_EXT }} $FILENAME
+            FILENAME=llvm-$LLVM_VERSION-${{ matrix.platform.os }}-$LIB.${{ matrix.platform.SO_SUFFIX }}
+            mv $LIB.${{ matrix.platform.SO_SUFFIX }} $FILENAME
             gh release upload -R npaun/bins llvm-$LLVM_VERSION $FILENAME
           done
         env:
