@@ -92,14 +92,14 @@ jobs:
             FILENAME=llvm-$LLVM_VERSION-${{ matrix.platform.os }}-$BIN
 
             mv $BIN $FILENAME 
-            gh release upload -R npaun/bins llvm-$LLVM_VERSION $FILENAME
+            gh release upload -R npaun/bins llvm-$LLVM_VERSION $FILENAME || true
           done
 
           cd ../lib
           for LIB in $LLVM_LIBS; do
             FILENAME=llvm-$LLVM_VERSION-${{ matrix.platform.os }}-$LIB.${{ matrix.platform.SO_SUFFIX }}
             mv $LIB.${{ matrix.platform.SO_SUFFIX }} $FILENAME
-            gh release upload -R npaun/bins llvm-$LLVM_VERSION $FILENAME
+            gh release upload -R npaun/bins llvm-$LLVM_VERSION $FILENAME || true
           done
         env:
           GITHUB_TOKEN: ${{ github.TOKEN }}
