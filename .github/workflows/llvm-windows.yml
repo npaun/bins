@@ -19,7 +19,6 @@ env:
 
 jobs:
   build:
-    needs: create-release
     strategy:
       matrix:
         platform:
