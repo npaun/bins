@@ -77,12 +77,12 @@ jobs:
       - name: Get zig toolchain
         if: matrix.platform.toolchain == 'zig'
         run: |
+            echo "CMAKE_TOOLCHAIN_FILE=$(realpath zig-config/zig.cmake)" >> $GITHUB_ENV
             curl -L https://ziglang.org/builds/zig-linux-x86_64-0.14.0-dev.1651+ffd071f55.tar.xz -o zig.tar.xz
             mkdir zig
             tar -C zig --strip-components=1 -xJf zig.tar.xz
             cd zig
             pwd >> $GITHUB_PATH
-            echo "CMAKE_TOOLCHAIN_FILE=$(realpath zig-config/zig.cmake)" >> $GITHUB_ENV
       - name: Get llvm
         shell: bash
         run: |
