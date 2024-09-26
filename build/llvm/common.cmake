@@ -1,6 +1,6 @@
 set(CMAKE_BUILD_TYPE Release)
 
-set(LLVM_ENABLE_PROJECTS clang lldb)
+set(LLVM_ENABLE_PROJECTS "clang;lldb")
 set(BUILD_SHARED_LIBS OFF)
 
 # LLDB specific settings

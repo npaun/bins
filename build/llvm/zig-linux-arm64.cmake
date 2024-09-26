@@ -13,5 +13,5 @@ set(CMAKE_RANLIB "${CMAKE_CURRENT_LIST_DIR}/ranlib")
 set(LLVM_DEFAULT_TARGET_TRIPLE aarch64-linux-gnu)
 
 # Include basic config
-include("${CDMAKE_CURRENT_LIST_DIR}/common.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/common.cmake")
 
