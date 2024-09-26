@@ -82,7 +82,7 @@ jobs:
             tar -C zig --strip-components=1 -xJf zig.tar.xz
             cd zig
             pwd >> $GITHUB_PATH
-            echo "CMAKE_TOOLCHAIN_FILE=$(pwd)/zig.cmake" >> $GITHUB_ENV
+            echo "CMAKE_TOOLCHAIN_FILE=$(realpath zig-config/zig.cmake)" >> $GITHUB_ENV
       - name: Get llvm
         shell: bash
         run: |
