@@ -46,7 +46,7 @@ jobs:
             LLVM_TARGETS_TO_BUILD: 'X86'
           - os: linux-arm64
             runner: ubuntu-latest
-            toolchain: linux-zig-arm64
+            toolchain: zig-linux-arm64
             BIN_EXT: ''
             SO_SUFFIX: 'so.${{ inputs.version }}'
             STATIC_LIB_EXT: 'a'
@@ -76,7 +76,7 @@ jobs:
         run: |
           choco install cmake ninja curl
       - name: Get zig toolchain
-        if: matrix.platform.toolchain == 'linux-zig-arm64'
+        if: startsWith(matrix.platform.toolchain, 'zig')
         run: |
             curl -L https://ziglang.org/builds/zig-linux-x86_64-0.14.0-dev.1651+ffd071f55.tar.xz -o zig.tar.xz
             mkdir zig
