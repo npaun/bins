@@ -10,8 +10,5 @@ set(CMAKE_AR "${CMAKE_CURRENT_LIST_DIR}/ar")
 set(CMAKE_RANLIB "${CMAKE_CURRENT_LIST_DIR}/ranlib")
 
 # Tell llvm it is being built for another platform
-set(LLVM_DEFAULT_TARGET_TRIPLE aarch64-linux-gnu)
-
-# Include basic config
-include("${CMAKE_CURRENT_LIST_DIR}/common.cmake")
+set(LLVM_DEFAULT_TARGET_TRIPLE aarch64-linux-gnu CACHE INTERNAL "" FORCE)
 
