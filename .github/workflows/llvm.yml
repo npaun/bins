@@ -12,9 +12,9 @@ permissions:
 
 env:
   LLVM_VERSION: ${{ inputs.version }} 
-  LLVM_TARGETS: 'clang-format lldb lldb-server'
-  LLVM_BINS: 'clang-format lldb lldb-server'
-  LLVM_LIBS: 'liblldb'
+  LLVM_TARGETS: 'clang-format'
+  LLVM_BINS: 'clang-format'
+  LLVM_LIBS: ''
 
 jobs:
   create-release:
