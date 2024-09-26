@@ -46,7 +46,6 @@ jobs:
           - os: linux-arm64
             runner: ubuntu-latest
             toolchain: zig
-            CMAKE_ARGS: ''
             BIN_EXT: ''
             SO_SUFFIX: 'so.${{ inputs.version }}'
             STATIC_LIB_EXT: 'a'
