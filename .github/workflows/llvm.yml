@@ -51,7 +51,7 @@ jobs:
             SO_SUFFIX: 'so.${{ inputs.version }}'
             STATIC_LIB_EXT: 'a'
             LLVM_TARGETS_TO_BUILD: 'ARM'
-            CMAKE_ARGS: "-DLLVM_DEFAULT_TARGET_TRIPLE=aarch64-linux-gnu"
+            CMAKE_ARGS: '-DLLVM_DEFAULT_TARGET_TRIPLE=aarch64-linux-gnu'
           - os: windows-amd64
             runner: windows-latest
             TAR_ARGS:  '--exclude=*/clang/test/Driver/Inputs/* --exclude=*/libcxx/test/std/input.output/filesystems/Inputs/static_test_env/* --exclude=*/libclc/amdgcn-mesa3d'
