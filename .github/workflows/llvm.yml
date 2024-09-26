@@ -75,6 +75,7 @@ jobs:
       - name: Get zig toolchain
         if: startsWith(matrix.platform.toolchain, 'zig')
         run: |
+            echo "CMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/build/llvm/${{ matrix.platform.toolchain }}.cmake" >> $GITHUB_ENV
             curl -L https://ziglang.org/builds/zig-linux-x86_64-0.14.0-dev.1651+ffd071f55.tar.xz -o zig.tar.xz
             mkdir zig
             tar -C zig --strip-components=1 -xJf zig.tar.xz
@@ -90,7 +91,7 @@ jobs:
         shell: bash
         run: |
           cd llvm
-          cmake -B build llvm -GNinja -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/build/llvm/${{ matrix.platform.toolchain }}.cmake -C $GITHUB_WORKSPACE/build/llvm/common.cmake -DLLVM_TARGETS_TO_BUILD=${{ matrix.platform.LLVM_TARGETS_TO_BUILD }}
+          cmake -B build llvm -GNinja  -C $GITHUB_WORKSPACE/build/llvm/common.cmake -DLLVM_TARGETS_TO_BUILD=${{ matrix.platform.LLVM_TARGETS_TO_BUILD }}
       - name: Build targets
         shell: bash
         run: |
