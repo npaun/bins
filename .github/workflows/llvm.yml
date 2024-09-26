@@ -12,7 +12,6 @@ permissions:
 
 env:
   LLVM_VERSION: ${{ inputs.version }} 
-  LLVM_PROJECTS: 'clang;lldb'
   LLVM_TARGETS: 'clang-format lldb lldb-server'
   LLVM_BINS: 'clang-format lldb lldb-server'
   LLVM_LIBS: 'liblldb'
@@ -33,26 +32,28 @@ jobs:
         platform:
           - os: darwin-arm64
             runner: macos-latest
+            toolchain: common
             BIN_EXT: ''
             SO_SUFFIX: '${{ inputs.version }}.dylib'
             STATIC_LIB_EXT: 'a'
             LLVM_TARGETS_TO_BUILD: 'ARM'
           - os: linux-amd64
             runner: ubuntu-latest
+            toolchain: common
             BIN_EXT: ''
             SO_SUFFIX: 'so.${{ inputs.version }}'
             STATIC_LIB_EXT: 'a'
             LLVM_TARGETS_TO_BUILD: 'X86'
           - os: linux-arm64
             runner: ubuntu-latest
-            toolchain: zig
+            toolchain: linux-zig-arm64
             BIN_EXT: ''
             SO_SUFFIX: 'so.${{ inputs.version }}'
             STATIC_LIB_EXT: 'a'
             LLVM_TARGETS_TO_BUILD: 'ARM'
-            CMAKE_ARGS: '-DLLVM_DEFAULT_TARGET_TRIPLE=aarch64-linux-gnu'
           - os: windows-amd64
             runner: windows-latest
+            toolchain: common
             TAR_ARGS: '--exclude=*/clang/test/Driver/Inputs/* --exclude=*/libcxx/test/std/input.output/filesystems/Inputs/static_test_env/* --exclude=*/libclc/amdgcn-mesa3d'
             BIN_EXT: 'exe'
             SO_SUFFIX: 'dll'
@@ -75,9 +76,8 @@ jobs:
         run: |
           choco install cmake ninja curl
       - name: Get zig toolchain
-        if: matrix.platform.toolchain == 'zig'
+        if: matrix.platform.toolchain == 'linux-zig-arm64'
         run: |
-            echo "CMAKE_TOOLCHAIN_FILE=$(realpath zig-config/zig.cmake)" >> $GITHUB_ENV
             curl -L https://ziglang.org/builds/zig-linux-x86_64-0.14.0-dev.1651+ffd071f55.tar.xz -o zig.tar.xz
             mkdir zig
             tar -C zig --strip-components=1 -xJf zig.tar.xz
@@ -93,7 +93,7 @@ jobs:
         shell: bash
         run: |
           cd llvm
-          cmake -B build llvm -GNinja -DLLVM_ENABLE_PROJECTS="$LLVM_PROJECTS" -DLLDB_ENABLE_PYTHON=0  -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DLLDB_INCLUDE_TESTS=OFF -DLLVM_TARGETS_TO_BUILD=${{ matrix.platform.LLVM_TARGETS_TO_BUILD }} ${{ matrix.platform.CMAKE_ARGS }}
+          cmake -B build llvm -GNinja -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/build/llvm/${{ matrix.platform.toolchain }}.cmake -DLLVM_TARGETS_TO_BUILD=${{ matrix.platform.LLVM_TARGETS_TO_BUILD }}
       - name: Build targets
         shell: bash
         run: |
