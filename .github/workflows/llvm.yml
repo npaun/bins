@@ -91,7 +91,7 @@ jobs:
         shell: bash
         run: |
           cd llvm
-          cmake -B build llvm -GNinja  -C $GITHUB_WORKSPACE/build/llvm/common.cmake -DLLVM_TARGETS_TO_BUILD=${{ matrix.platform.LLVM_TARGETS_TO_BUILD }}
+          cmake -B build llvm -GNinja $(cat $GITHUB_WORKSPACE/build/llvm/common.args) -DLLVM_TARGETS_TO_BUILD=${{ matrix.platform.LLVM_TARGETS_TO_BUILD }}
       - name: Build targets
         shell: bash
         run: |
