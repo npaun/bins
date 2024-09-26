@@ -23,7 +23,7 @@ jobs:
     steps:
       - name: Create Github release
         run: |
-          gh release create -R npaun/bins llvm-$LLVM_VERSION
+          gh release create -R npaun/bins llvm-$LLVM_VERSION || true
         env:
           GITHUB_TOKEN: ${{ github.TOKEN }}
   build:
@@ -36,26 +36,33 @@ jobs:
             BIN_EXT: ''
             SO_SUFFIX: '${{ inputs.version }}.dylib'
             STATIC_LIB_EXT: 'a'
+            LLVM_TARGETS_TO_BUILD: ARM
           - os: linux-amd64
             runner: ubuntu-latest
             BIN_EXT: ''
             SO_SUFFIX: 'so.${{ inputs.version }}'
             STATIC_LIB_EXT: 'a'
+            LLVM_TARGETS_TO_BUILD: X86
           - os: linux-arm64
             runner: ubuntu-latest
-            CMAKE_ARGS: '-DCMAKE_SYSTEM_NAME=Linux -DLLVM_HOST_TRIPLE=aarch64-unknown-linux-gnu -DLLVM_TARGETS_TO_BUILD=ARM'
+            toolchain: zig
+            CMAKE_ARGS: ''
             BIN_EXT: ''
             SO_SUFFIX: 'so.${{ inputs.version }}'
             STATIC_LIB_EXT: 'a'
+            LLVM_TARGETS_TO_BUILD: ARM
+            CMAKE_ARGS: "-DLLVM_DEFAULT_TARGET_TRIPLE=aarch64-linux-gnu"
           - os: windows-amd64
             runner: windows-latest
             TAR_ARGS:  '--exclude=*/clang/test/Driver/Inputs/* --exclude=*/libcxx/test/std/input.output/filesystems/Inputs/static_test_env/* --exclude=*/libclc/amdgcn-mesa3d'
             BIN_EXT: 'exe'
-            SO_SUFFIX: '.dll'
+            SO_SUFFIX: 'dll'
             STATIC_LIB_EXT: 'lib'
+            LLVM_TARGETS_TO_BUILD: X86
     runs-on: ${{ matrix.platform.runner }}
     name: ${{ matrix.platform.os }}
     steps:
+      - uses: actions/checkout@v4
       - name: Setup for macOS
         if: runner.os == 'macOS'
         run: |
@@ -68,6 +75,15 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           choco install cmake ninja curl
+      - name: Get zig toolchain
+        if: runner.toolchain == 'zig'
+        run: |
+            curl -L https://ziglang.org/builds/zig-linux-x86_64-0.14.0-dev.1651+ffd071f55.tar.xz -o zig.tar.xz
+            mkdir zig
+            tar -C zig --strip-components=1 -xJF zig.tar.xz
+            cd zig
+            pwd >> $GITHUB_PATH
+            echo "CMAKE_TOOLCHAIN_FILE=$(pwd)/zig.cmake" >> $GITHUB_ENV
       - name: Get llvm
         shell: bash
         run: |
@@ -78,7 +94,7 @@ jobs:
         shell: bash
         run: |
           cd llvm
-          cmake -B build llvm -GNinja -DLLVM_ENABLE_PROJECTS="$LLVM_PROJECTS" -DLLDB_ENABLE_PYTHON=0  -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DLLDB_INCLUDE_TESTS=OFF ${{ matrix.platform.CMAKE_ARGS }}
+          cmake -B build llvm -GNinja -DLLVM_ENABLE_PROJECTS="$LLVM_PROJECTS" -DLLDB_ENABLE_PYTHON=0  -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DLLDB_INCLUDE_TESTS=OFF -DLLVM_TARGETS_TO_BUILD=${{ matrix.platform.LLVM_TARGETS_TO_BUILD }} ${{ matrix.platform.CMAKE_ARGS }}
       - name: Build targets
         shell: bash
         run: |
@@ -89,9 +105,9 @@ jobs:
         run: |
           cd llvm/build/bin
           for BIN in $LLVM_BINS; do
-            FILENAME=llvm-$LLVM_VERSION-${{ matrix.platform.os }}-$BIN.$BIN_EXT
+            FILENAME=llvm-$LLVM_VERSION-${{ matrix.platform.os }}-$BIN.${{ matrix.platform.BIN_EXT }}
 
-            mv $BIN.$BIN_EXT $FILENAME 
+            mv $BIN.${{ matrix.platform.BIN_EXT }} $FILENAME 
             gh release upload -R npaun/bins llvm-$LLVM_VERSION $FILENAME || true
           done
 
