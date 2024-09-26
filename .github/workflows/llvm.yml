@@ -36,13 +36,13 @@ jobs:
             BIN_EXT: ''
             SO_SUFFIX: '${{ inputs.version }}.dylib'
             STATIC_LIB_EXT: 'a'
-            LLVM_TARGETS_TO_BUILD: ARM
+            LLVM_TARGETS_TO_BUILD: 'ARM'
           - os: linux-amd64
             runner: ubuntu-latest
             BIN_EXT: ''
             SO_SUFFIX: 'so.${{ inputs.version }}'
             STATIC_LIB_EXT: 'a'
-            LLVM_TARGETS_TO_BUILD: X86
+            LLVM_TARGETS_TO_BUILD: 'X86'
           - os: linux-arm64
             runner: ubuntu-latest
             toolchain: zig
@@ -50,7 +50,7 @@ jobs:
             BIN_EXT: ''
             SO_SUFFIX: 'so.${{ inputs.version }}'
             STATIC_LIB_EXT: 'a'
-            LLVM_TARGETS_TO_BUILD: ARM
+            LLVM_TARGETS_TO_BUILD: 'ARM'
             CMAKE_ARGS: "-DLLVM_DEFAULT_TARGET_TRIPLE=aarch64-linux-gnu"
           - os: windows-amd64
             runner: windows-latest
@@ -58,7 +58,7 @@ jobs:
             BIN_EXT: 'exe'
             SO_SUFFIX: 'dll'
             STATIC_LIB_EXT: 'lib'
-            LLVM_TARGETS_TO_BUILD: X86
+            LLVM_TARGETS_TO_BUILD: 'X86'
     runs-on: ${{ matrix.platform.runner }}
     name: ${{ matrix.platform.os }}
     steps:
