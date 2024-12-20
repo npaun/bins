@@ -10,8 +10,6 @@ on:
 permissions:
   contents: write
 
-env:
-  RELEASE_NAME: wpt-${{ inputs.ref }}
 jobs:
   create-release:
     runs-on: ubuntu-latest
@@ -24,6 +22,7 @@ jobs:
       - name: Create Github Release
         shell: bash
         run: |
+          RELEASE_NAME=wpt-$(git rev-parse --short HEAD)
           gh release create $RELEASE_NAME || true
-          git archive --prefix=$RELEASE_NAME -o $RELEASE_NAME.tar.gz ${{ inputs.ref }}
+          git archive --prefix=$RELEASE_NAME -o $RELEASE_NAME.tar.gz HEAD
           gh release upload $RELEASE_NAME $RELEASE_NAME.tar.gz
