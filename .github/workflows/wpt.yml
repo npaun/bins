@@ -23,8 +23,8 @@ jobs:
         shell: bash
         run: |
           RELEASE_NAME=wpt-$(git rev-parse --short HEAD)
-          gh release create $RELEASE_NAME || true
+          gh release create -R npaun/bins $RELEASE_NAME || true
           git archive --prefix=$RELEASE_NAME -o $RELEASE_NAME.tar.gz HEAD
-          gh release upload $RELEASE_NAME $RELEASE_NAME.tar.gz
+          gh release upload -R npaun/bins $RELEASE_NAME $RELEASE_NAME.tar.gz
         env:
           GITHUB_TOKEN: ${{ github.TOKEN }}
