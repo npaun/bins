@@ -5,7 +5,7 @@ on:
     inputs:
       ref:
         description: 'Commit or branch name to fetch'
-        default: main
+        default: master
 
 permissions:
   contents: write
