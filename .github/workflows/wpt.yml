@@ -26,3 +26,5 @@ jobs:
           gh release create $RELEASE_NAME || true
           git archive --prefix=$RELEASE_NAME -o $RELEASE_NAME.tar.gz HEAD
           gh release upload $RELEASE_NAME $RELEASE_NAME.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ github.TOKEN }}
